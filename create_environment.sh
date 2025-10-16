@@ -1,38 +1,43 @@
-#!/usr/bin/env bash
-read -p "Enter your name: " name
-base_dir="submission_reminder_$name"
-echo "Creating the directory"
-mkdir -p "$base_dir"
-if [ -d "$base_dir" ]; then
-echo "Congratulations ! directory successfully created"
-else 
-echo  "Failed to create the directory"
-fi
-mkdir -p "$base_dir/config"
-mkdir -p "$base_dir/app"
-mkdir -p "$base_dir/assets"
-mkdir -p "$base_dir/modules"
-echo -n "Processing"
-for i in {1..5}; do
-  echo -n "."
-  sleep 0.5
-done
-echo " Done!"
-echo "Sub-directory successfully created"
-cat >> "$base_dir/config/config.env" << 'EOF'
+#!/usr/bin/bash
+
+#When the script runs, it should prompt the user for their name and create a directory named submission_reminder_{yourName}, replacing {yourName} With the input.
+
+read -p "Enter your name: " yourname
+#make the directory called submission_remainder_{yourname} as well as the subdirectories with their contents
+
+parent_dir="submission_reminder_${yourname}"
+mkdir -p "$parent_dir"
+
+#create subdirectories
+mkdir -p "$parent_dir/app"
+mkdir -p "$parent_dir/modules"
+mkdir -p "$parent_dir/assets"
+mkdir -p "$parent_dir/config"
+
+#creating the files and their contents
+
+app="$parent_dir/app"
+modules="$parent_dir/modules"
+assets="$parent_dir/assets"
+config="$parent_dir/config"
+
+#create config.env and its content
+cat > "$config/config.env" << 'EOF'
 # This is the config file
 ASSIGNMENT="Shell Navigation"
 DAYS_REMAINING=2
 EOF
-cat >> "$base_dir/app/reminder.sh" << 'EOF'
-#!/usr/bin/env bash
+
+#create reminder.sh and its content
+cat > "$app/reminder.sh" << 'EOF'
+#!/bin/bash
 
 # Source environment variables and helper functions
 source ./config/config.env
 source ./modules/functions.sh
 
 # Path to the submissions file
-submissions_file="./assets/submissions.txt"
+submissions_file="$(dirname "$0")/../assets/submissions.txt"
 
 # Print remaining time and run the reminder function
 echo "Assignment: $ASSIGNMENT"
@@ -41,8 +46,10 @@ echo "--------------------------------------------"
 
 check_submissions $submissions_file
 EOF
-cat >> "$base_dir/modules/functions.sh" << 'EOF'
-#!/usr/bin/env bash
+
+#create functions.sh and its contents
+cat > "$modules/functions.sh" << 'EOF'
+#!/bin/bash
 
 # Function to read submissions file and output students who have not submitted
 function check_submissions {
@@ -63,73 +70,52 @@ function check_submissions {
     done < <(tail -n +2 "$submissions_file") # Skip the header
 }
 EOF
-cat >> "$base_dir/assets/submissions.txt" << 'EOF'
 
+#create submissions.txt and its contents
+cat > "$assets/submissions.txt" << 'EOF'
 student, assignment, submission status
 Chinemerem, Shell Navigation, not submitted
 Chiagoziem, Git, submitted
 Divine, Shell Navigation, not submitted
 Anissa, Shell Basics, submitted
-Noella, processes, not submitted
-Stella,Signals, submitted
-Claudia, Redirections, submitted
-Monia, Filters, submitted
-Maley, Parsing, not submitted
+Mwiti, Git, submitted
+Musando, Git, not submitted
+Yvonne, Shell Navigation, not submitted
+Antoinne, shell Basics, submitted
+Stephen, Shell Navigation, not submitted
+Michael, Git, not submitted
+Richard, Shell Basics, submitted
 EOF
-echo -n "Processing"
-for i in {1..3}; do
-echo -n "."
-sleep 3
-done
-echo "Files moved to the subdirectories successfully"
-touch "$base_dir/startup.sh"
-cat >> "$base_dir/startup.sh" << 'EOF'
+
+cat > "$parent_dir/startup.sh" << 'EOF'
 #!/bin/bash
-echo "***********************************"
-echo "Starting Submission Reminder App..."
-echo "***********************************"
-# Get the script's directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Change to app directory
-cd "$SCRIPT_DIR"
+# Get absolute path of this script
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Check if required files exist
-if [ -f "config/config.env" ]; then
-    echo " config/config.env exists!"
-else
-    echo "Error, config/config/env doesn't exist"
-    exit 1
+# Path to reminder.sh
+reminder_script="$script_dir/app/reminder.sh"
 
-fi
-
-if [ -f "modules/reminder.sh" ]; then
-    echo "app/reminder.sh exists"
-else 
-    echo "Error, reminder.sh doesn't exists"
+# Check if config file exists
+if [ ! -f "$script_dir/config/config.env" ]; then
+    echo "Error: config.env not found. Please run this script from inside $script_dir"
     exit 1
 fi
 
-if [ -f "modules/functions.sh" ]; then
-    echo "modules/functions.sh exists"
-else
-    echo "Error, functions.sh doesn't exists"
-    exit 1
-fi
+# Launch the reminder app
+bash "$reminder_script"
 
-if [ -f "assets/submissions.txt" ]; then
-    echo "assets/submissions.txt exists"
-else 
-    echo "Error, Submissions.txt doesn't exists"
-    exit 1
-
-fi
-
-# Execute the reminder script
-bash app/reminder.sh
 EOF
-echo "Application finished."
-find . "$base_dir" -type f -name '*.sh' -exec chmod +x {} \;
-echo "Permission applied successfully"
-echo "Your environment is ready to operate"
-echo "*******READY TO START********"
+
+#Give .sh files excecution permissions
+chmod +x $app/*
+chmod +x $modules/*
+cd $parent_dir
+chmod +x startup.sh
+cd ..
+
+
+echo "wow! Environment has been created successfully"
+echo "To test the application run:"
+echo "cd $parent_dir && ./startup.sh"
+

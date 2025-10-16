@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Function to read submissions file and output students who have not submitted
 function check_submissions {

@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Source environment variables and helper functions
 source ./config/config.env
 source ./modules/functions.sh
 
 # Path to the submissions file
-submissions_file="./assets/submissions.txt"
+submissions_file="$(dirname "$0")/../assets/submissions.txt"
 
 # Print remaining time and run the reminder function
 echo "Assignment: $ASSIGNMENT"
