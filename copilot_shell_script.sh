@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Welcome to copilot shell script"
 # Path to  the config file
-CONFIGURE="/config/config.env"
+CONFIGURE="$submission_reminder_$name/config/config.env"
 # Checking the existence of the config file
 if [[ ! -f "$CONFIGURE" ]]; then
    echo "Config file not found at $CONFIGURE"

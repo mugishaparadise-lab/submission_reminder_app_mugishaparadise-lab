@@ -20,7 +20,7 @@ fi
 if [ -f "app/reminder.sh" ]; then
     echo "app/reminder.sh exists"
 else 
-    echo "Error, app/reminder.sh doesn't exists"
+    echo "Error, app/reminder.sh exists"
     exit 1
 fi
 
@@ -34,7 +34,7 @@ fi
 if [ -f "assets/submissions.txt" ]; then
     echo "assets/submissions.txt exists"
 else 
-    echo "Error, assets/submissions.txt doesn't exists"
+    echo "Error, assest/submissions.txt doesn't exists"
     exit 1
 
 fi

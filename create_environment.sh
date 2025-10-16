@@ -98,7 +98,7 @@ cd "$SCRIPT_DIR"
 if [ -f "config/config.env" ]; then
     echo " config/config.env exists!"
 else
-    echo "Error"
+    echo "Error, config/config/env doesn't exist"
     exit 1
 
 fi
@@ -106,27 +106,27 @@ fi
 if [ -f "modules/reminder.sh" ]; then
     echo "app/reminder.sh exists"
 else 
-    echo "Error"
+    echo "Error, reminder.sh doesn't exists"
     exit 1
 fi
 
 if [ -f "modules/functions.sh" ]; then
     echo "modules/functions.sh exists"
 else
-    echo "Error"
+    echo "Error, functions.sh doesn't exists"
     exit 1
 fi
 
 if [ -f "assets/submissions.txt" ]; then
     echo "assets/submissions.txt exists"
 else 
-    echo "Error"
+    echo "Error, Submissions.txt doesn't exists"
     exit 1
 
 fi
 
 # Execute the reminder script
-bash modules/reminder.sh
+bash app/reminder.sh
 EOF
 echo "Application finished."
 find . "$base_dir" -type f -name '*.sh' -exec chmod +x {} \;
