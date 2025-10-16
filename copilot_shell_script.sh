@@ -1,35 +1,52 @@
 #!/bin/bash
-echo "Welcome to copilot shell script"
-# Path to  the config file
-CONFIGURE="/config/config.env"
-# Checking the existence of the config file
-if [[ ! -f "$CONFIGURE" ]]; then
-   echo "Config file not found at $CONFIGURE"
-   exit 1
-fi
-# Prompt for new assignment name
-read -p "Enter the assignment name: " new_assignment
 
-# Validate input
-if [[ -z "$new_assignment" ]]; then
-    echo "Ooops, Assignment name cannot be empty."
-    exit 1
-fi
+parent="submission_reminder_*/"
+star="startup.sh"
+config="./submission_reminder_*/config/config.env"
+continuation="y"
+assignment_name="" # Initialize the variable to hold the user's input
 
-# Update ASSIGNMENT in line 2 of config/config.env
-   sed -i "s/^ASSIGNMENT=.*/ASSIGNMENT=\"$new_assignment\"/" "$CONFIGURE"
-# Confirmation message
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-echo "Assignment name changed successfully"
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-echo "New assignment: $new_assignment"
-# Run startup.sh
-echo "Running startup.sh ..."
-echo "Select a student directory:"
-select dir in submission_reminder_*/; do
-    if [ -n "$dir" ] && [ -f "$dir/startup.sh" ]; then
-        ./"$dir/startup.sh"
-        break
+copilot_function() {
+    # The assignment name is passed as the first argument
+    assignment="$1"
+
+    if [ ! -d $parent ]; then
+        sleep 0.9
+        echo "The directory doesn't exist. Please run the file create_environment.sh"
+        echo " "
+        exit 1
+    else
+       sed -i "s/ASSIGNMENT=\".*\"/ASSIGNMENT=\"$assignment\"/" "$config"
+        echo "Processing '$assignment' assignment"
+
+
+        cd $parent
+        if [ ! -f $star ]; then
+            echo "Error: $star not found."
+            exit 1
+        else
+            ./$star
+            cd ..
+        fi
     fi
+}
+
+while [[ "$continuation" == "y" || "$continuation" == "Y" ]]; do
+    echo " "
+    echo "Which assignment do you want to check?"
+    echo "Example options:
+Shell Navigation
+Shell Basics
+Git"
+
+    # Read the assignment name directly into assignment_name
+    read -p "Enter the assignment name: " assignment_name
+
+    # Call the function, passing the name the user typed
+    copilot_function "$assignment_name"
+
+    echo " "
+    read -p "Do you want to analyze another assignment (y/n): " continuation
 done
-echo ""
+
+echo -e "Exiting"
